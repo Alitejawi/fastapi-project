@@ -1,0 +1,5 @@
+fastapi
+pydantic
+redis
+rq
+uvicorn
