@@ -15,13 +15,14 @@ async def handle_webhook(request: Request):
     redis_client.rpush("task_queue", json.dumps(event))
     return {"message": "Event received and buffered"}
 
-@app.post("/backendservice", status_code=201)
-async def handle_backend(request: Request):
-    event = await request.json()
-    print(event)
-    print("Received")
-    # Forward the event
-    return {"message": "Event forwarded successfully"}
+# Not needed here, as this goes into it's own app
+# @app.post("/backendservice", status_code=201)
+# async def handle_backend(request: Request):
+#     event = await request.json()
+#     print(event)
+#     print("Received")
+#     # Forward the event
+#     return {"message": "Event forwarded successfully"}
 
 async def process_events():
     while True:
