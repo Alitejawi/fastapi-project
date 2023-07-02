@@ -3,26 +3,22 @@ import redis
 import json
 import requests
 import asyncio
+from pydantic import BaseModel
 
 # Create app instances
 app = FastAPI()
 redis_client = redis.Redis()
 
-@app.post("/webhook")
-async def handle_webhook(request: Request):
-    event = await request.json()
-    # Storing the event in the Redis message queue, push
-    redis_client.rpush("task_queue", json.dumps(event))
-    return {"message": "Event received and buffered"}
+class Event(BaseModel):
+    event_id: int
+    event_name: str
+    # Add more fields as needed
 
-# Not needed here, as this goes into it's own app
-# @app.post("/backendservice", status_code=201)
-# async def handle_backend(request: Request):
-#     event = await request.json()
-#     print(event)
-#     print("Received")
-#     # Forward the event
-#     return {"message": "Event forwarded successfully"}
+@app.post("/webhook")
+async def handle_webhook(request: Request, event: Event):
+    # Storing the event in the Redis message queue, push
+    redis_client.rpush("task_queue", event.json())
+    return {"message": "Event received and buffered"}
 
 async def process_events():
     while True:
